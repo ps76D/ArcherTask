@@ -12,6 +12,7 @@ TagManager:
   - Water
   - UI
   - 
+  - Player
   - 
   - 
   - 
@@ -19,10 +20,9 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
-  - 
+  - Enemy
+  - Ground
+  - DynamicObstacle
   - 
   - 
   - 

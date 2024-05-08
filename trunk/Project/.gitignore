@@ -3,3 +3,6 @@
 /UserSettings/
 *.csproj
 *.sln
+/obj/
+/.idea/
+/Temp/

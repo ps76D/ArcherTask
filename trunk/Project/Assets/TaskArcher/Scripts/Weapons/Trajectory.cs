@@ -5,7 +5,7 @@ namespace TaskArcher.Scripts.Weapons
     public class Trajectory : MonoBehaviour
     {
         [SerializeField] private RangeWeapon weapon;
-        [SerializeField] private GameObject pointPrefab;
+        [SerializeField] private SpriteRenderer pointPrefab;
         [SerializeField] private Transform pointsParent;
         [SerializeField] private float minDistanceBetweenPoints;
         [SerializeField] private float maxDistanceBetweenPoints;
@@ -14,10 +14,12 @@ namespace TaskArcher.Scripts.Weapons
         [SerializeField] private float pointMaxScale;
         [SerializeField] private float pointMinScale;
 
+        [SerializeField] private Animator nestedFadeGroupAnimator;
+
         public Transform PointsParent => pointsParent;
         
         private float _distanceBetweenPoints;
-        private GameObject[] _trajectoryPoints;
+        private SpriteRenderer[] _trajectoryPoints;
         
         private void OnEnable()
         {
@@ -31,7 +33,7 @@ namespace TaskArcher.Scripts.Weapons
 
         private void CreateTrajectoryPoints()
         {
-            _trajectoryPoints = new GameObject[numberOfPoints];
+            _trajectoryPoints = new SpriteRenderer[numberOfPoints];
 
             var scaleStep = (pointMaxScale - pointMinScale) / numberOfPoints;
             var nextScale = pointMaxScale;
@@ -42,6 +44,7 @@ namespace TaskArcher.Scripts.Weapons
                 var scale = Vector3.one * nextScale;
                 
                 _trajectoryPoints[i] = Instantiate(pointPrefab, pointsParent);
+                
                 _trajectoryPoints[i].transform.localScale = scale;
             } 
         }
@@ -83,5 +86,24 @@ namespace TaskArcher.Scripts.Weapons
 
             _distanceBetweenPoints = calcDistance;
         }
+
+        public void ShowTrajectoryInTime()
+        {
+            /*Debug.Log("ShowTrajectoryInTime");*/
+            PointsParent.gameObject.SetActive(true);
+            nestedFadeGroupAnimator.CrossFade("Show", 0);
+        }
+
+        private void HideParent()
+        {
+            PointsParent.gameObject.SetActive(false);
+        }
+        
+        public void HideTrajectory()
+        {
+            /*Debug.Log("HideTrajectory");*/
+            nestedFadeGroupAnimator.CrossFade("Hide", 0);
+            Invoke(nameof(HideParent), 0.07f );
+        } 
     }
 }

@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/TaskArcher/Scenes/TaskArcherScene.unity
+    path: Assets/Scenes/TaskArcherScene.unity
     guid: 325c8a895a51ecc4eb92baa0504e3f2c
   m_configObjects: {}

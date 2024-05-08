@@ -1,4 +1,6 @@
-﻿using TaskArcher.Scripts.Units;
+﻿using DG.Tweening;
+using NaughtyAttributes;
+using TaskArcher.Scripts.Units;
 using Test.Scripts;
 using UnityEngine;
 using UnityEngine.Animations;
@@ -9,13 +11,15 @@ namespace TaskArcher.Scripts.Weapons
     public class TargetingSystem : MonoBehaviour
     {
         [SerializeField] private Player player;
-        [SerializeField] private Transform targetTransform;
         [SerializeField] private GameObject targetPrefab;
         [SerializeField] private bool isTargeting;
         [SerializeField] private AimConstraint constraintToTarget;
         [SerializeField] private Transform startTransform;
         [SerializeField] private Vector3 distance;
         [SerializeField] private Trajectory trajectory;
+
+        [InfoBox("Auto Set:")]
+        [SerializeField] private Transform targetTransform;
         
         private Camera _mainCamera;
         
@@ -23,7 +27,7 @@ namespace TaskArcher.Scripts.Weapons
 
         private void Start()
         {
-            trajectory.PointsParent.gameObject.SetActive(false);
+            /*trajectory.PointsParent.gameObject.SetActive(false);*/
             
             InitMainCamera();
 
@@ -78,7 +82,10 @@ namespace TaskArcher.Scripts.Weapons
             if (!isTargeting)
             {
                 targetTransform.gameObject.SetActive(true);
-                trajectory.PointsParent.gameObject.SetActive(true);
+                
+                /*trajectory.PointsParent.gameObject.SetActive(true);*/
+                
+                trajectory.ShowTrajectoryInTime();
                 
                 player.onChangeAnim?.Invoke(player.Animator, ConstsAnimNames.AttackStartClipName);
 
@@ -101,7 +108,10 @@ namespace TaskArcher.Scripts.Weapons
         {
             if (!Mouse.current.rightButton.wasReleasedThisFrame) return;
             targetTransform.gameObject.SetActive(false);
-            trajectory.PointsParent.gameObject.SetActive(false);
+            trajectory.HideTrajectory();
+            
+            /*trajectory.PointsParent.gameObject.SetActive(false);*/
+            
             player.Weapon.onAttack?.Invoke();
             isTargeting = false;
         }
