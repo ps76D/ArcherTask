@@ -1,4 +1,4 @@
-using TaskArcher.Scripts.Coins;
+using TaskArcher.Coins;
 using TMPro;
 using UnityEngine;
 

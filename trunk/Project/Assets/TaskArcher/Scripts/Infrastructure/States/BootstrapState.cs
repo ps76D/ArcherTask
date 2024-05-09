@@ -1,4 +1,5 @@
 ﻿using TaskArcher.Infrastructure.AssetManagement;
+using TaskArcher.Infrastructure.Factory;
 using TaskArcher.Infrastructure.Services;
 using TaskArcher.Infrastructure.Services.CustomEventBus;
 using UnityEngine;
@@ -29,11 +30,12 @@ namespace TaskArcher.Infrastructure.States
         {
         }
 
-        private void EnterLoadLevel() => _stateMachine.Enter<LoadLevelState, string>(AssetPath.UiInitScene);
+        private void EnterLoadLevel() => _stateMachine.Enter<LoadLevelState, string>(AssetPath.UIInit);
 
         private void RegisterServices()
         {
             _services.RegisterSingle<IAssets>(new AssetProvider());
+            _services.RegisterSingle<IGameFactory>(new GameFactory(_services.Single<IAssets>()));
             
             _services.RegisterSingle<IEventBus>(new EventBus());
             

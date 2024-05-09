@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Init.unity
+    guid: 3c04fad640ae22143946ebc7236d5e4d
+  - enabled: 1
+    path: Assets/Scenes/UIInit.unity
+    guid: 316b75e0ffe75834fa612ae271686133
+  - enabled: 1
     path: Assets/Scenes/TaskArcherScene.unity
     guid: 325c8a895a51ecc4eb92baa0504e3f2c
   m_configObjects: {}

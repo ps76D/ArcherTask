@@ -1,6 +1,6 @@
 ﻿using System;
 using Spine.Unity;
-using TaskArcher.Scripts.Coins;
+using TaskArcher.Coins;
 using UnityEngine;
 
 namespace TaskArcher.Scripts.Weapons

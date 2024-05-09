@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace TaskArcher.Scripts.Coins
+namespace TaskArcher.Coins
 {
     public class CoinSpawner : MonoBehaviour
     {

@@ -4,7 +4,7 @@ using DG.Tweening;
 using TaskArcher.Scripts.UI;
 using UnityEngine;
 
-namespace TaskArcher.Scripts.Coins
+namespace TaskArcher.Coins
 {
     public class Coin : MonoBehaviour
     {

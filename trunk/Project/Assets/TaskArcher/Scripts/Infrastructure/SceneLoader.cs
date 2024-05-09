@@ -13,6 +13,9 @@ namespace TaskArcher.Infrastructure
 
         public void Load(string name, Action onLoaded = null) =>
             _coroutineRunner.StartCoroutine(LoadScene(name, onLoaded));
+        
+        public void ReLoad(string name, Action onLoaded = null) =>
+            _coroutineRunner.StartCoroutine(ReLoadScene(name, onLoaded));
 
         private IEnumerator LoadScene(string nextScene, Action onLoaded = null)
         {
@@ -22,6 +25,16 @@ namespace TaskArcher.Infrastructure
                 yield break;
             }
             
+            AsyncOperation waitNextScene = SceneManager.LoadSceneAsync(nextScene);
+
+            while (!waitNextScene.isDone)
+                yield return null;
+
+            onLoaded?.Invoke();
+        }
+        
+        private IEnumerator ReLoadScene(string nextScene, Action onLoaded = null)
+        {
             AsyncOperation waitNextScene = SceneManager.LoadSceneAsync(nextScene);
 
             while (!waitNextScene.isDone)

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using TaskArcher.Infrastructure.Factory;
 using TaskArcher.Infrastructure.Services;
+using TaskArcher.Infrastructure.Services.CustomEventBus;
 using TaskArcher.UI;
 
 namespace TaskArcher.Infrastructure.States
@@ -15,7 +17,10 @@ namespace TaskArcher.Infrastructure.States
             _states = new Dictionary<Type, IExitableState>
             {
                 [typeof(BootstrapState)] = new BootstrapState(this, sceneLoader, services),
-                [typeof(LoadLevelState)] = new LoadLevelState(this, sceneLoader, baseUIRoot),
+                [typeof(LoadLevelState)] = new LoadLevelState(this, sceneLoader, 
+                    services.Single<IGameFactory>(), baseUIRoot, services.Single<IEventBus>()),
+                [typeof(InGameState)] = new InGameState(this, sceneLoader, services.Single<IEventBus>()),
+                [typeof(RestartGameState)] = new RestartGameState(this, services.Single<IEventBus>()),
             };
         }
         public void Enter<TState>() where TState : class, IState

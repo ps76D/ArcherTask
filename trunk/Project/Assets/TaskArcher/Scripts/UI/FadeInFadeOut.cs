@@ -69,7 +69,7 @@ namespace TaskArcher.UI
                 _fadeTween.Kill(false);
             }
 
-            /*_fadeTween = canvasGroup.DOFade(endValue, duration);*/
+            _fadeTween = canvasGroup.DOFade(endValue, duration);
             _fadeTween.onComplete += onEnd;
         }
     }
