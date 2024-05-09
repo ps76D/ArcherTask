@@ -11,7 +11,7 @@ namespace TaskArcher.Infrastructure.Services
             {
                 if (_instance == null)
                 {
-                    var go = new GameObject("[COROUTINE MANAGER]");
+                    GameObject go = new GameObject("[COROUTINE MANAGER]");
                     _instance = go.AddComponent<Coroutines>();
                     DontDestroyOnLoad(go);
                 }

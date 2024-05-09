@@ -1,32 +1,44 @@
-﻿using TaskArcher.Scripts.Weapons;
-using Test.Scripts;
+﻿using TaskArcher.Infrastructure.Services.StaticData;
+using TaskArcher.Weapons;
 using UnityEngine;
 
-namespace TaskArcher.Scripts.Units
+namespace TaskArcher.Units
 {
     public class Unit : MonoBehaviour
     {
         [SerializeField] private Animator animator;
 
-        [SerializeField] private int health;
         [SerializeField] private Weapon weapon;
         [SerializeField] private Collider2D unitCollider;
-        [SerializeField] private float lifeTimeAfterDeath;
         [SerializeField] private Rigidbody2D unitRigidbody;
-        
+        [SerializeField] private UnitDefinition unitDefinition;
+
         protected internal Weapon Weapon => weapon;
         protected internal Animator Animator => animator;
-        
+
+        private float _health;
+        private float _lifeTimeAfterDeath;
+
+        private void Start()
+        {
+            InitUnit();
+        }
+        private void InitUnit()
+        {
+            _health = unitDefinition.health;
+            _lifeTimeAfterDeath = unitDefinition.lifeTimeAfterDeath;
+        }
+
         protected void SetAnim(Animator unitAnimator, string clipName)
         {
             unitAnimator.CrossFade(clipName, 0f);
         }
 
-        protected void TakeDamage(Unit unit, int damage)
+        protected void TakeDamage(Unit unit, float damage)
         {
-            unit.health -= damage;
+            unit._health -= damage;
 
-            if (unit.health <= 0)
+            if (unit._health <= 0)
             {
                 Death(unit.animator);
             }
@@ -39,7 +51,7 @@ namespace TaskArcher.Scripts.Units
             unitCollider.enabled = false;
             unitRigidbody.simulated = false;
             
-            Destroy(gameObject, lifeTimeAfterDeath);
+            Destroy(gameObject, _lifeTimeAfterDeath);
         }
     }
 }

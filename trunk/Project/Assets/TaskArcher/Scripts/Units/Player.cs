@@ -1,26 +1,25 @@
 ﻿using System;
-using Test.Scripts;
 using UnityEngine;
 
-namespace TaskArcher.Scripts.Units
+namespace TaskArcher.Units
 {
     public class Player : Unit
     {
-        public Action<Animator, string> onChangeAnim;
-        public Action<Unit, int> onTakeDamage;
+        public Action<Animator, string> OnChangeAnim;
+        public Action<Unit, float> OnTakeDamage;
         
         private void OnEnable()
         {
-            onChangeAnim += SetAnim;
-            Weapon.onAttack += AttackRange;
-            onTakeDamage += TakeDamage;
+            OnChangeAnim += SetAnim;
+            Weapon.OnAttack += AttackRange;
+            OnTakeDamage += TakeDamage;
         }
 
         private void OnDisable()
         {
-            onChangeAnim -= SetAnim;
-            Weapon.onAttack -= AttackRange;
-            onTakeDamage -= TakeDamage;
+            OnChangeAnim -= SetAnim;
+            Weapon.OnAttack -= AttackRange;
+            OnTakeDamage -= TakeDamage;
         }
 
         private void AttackRange()

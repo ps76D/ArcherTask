@@ -1,10 +1,10 @@
 ﻿using System;
 using UnityEngine;
 
-namespace TaskArcher.Scripts.Weapons
+namespace TaskArcher.Weapons
 {
     public class Weapon : MonoBehaviour
     {
-        public Action onAttack;
+        public Action OnAttack;
     }
 }

@@ -2,7 +2,7 @@ using TaskArcher.Coins;
 using TMPro;
 using UnityEngine;
 
-namespace TaskArcher.Scripts.UI
+namespace TaskArcher.UI
 {
     public class HudPanel : MonoBehaviour
     {
@@ -12,7 +12,7 @@ namespace TaskArcher.Scripts.UI
 
         private void OnEnable()
         {
-            Coin.onCoinCollected += IncreaseCoinsAmountText;
+            Coin.OnCoinCollected += IncreaseCoinsAmountText;
             
             UpdateCoinsAmountText();
         }

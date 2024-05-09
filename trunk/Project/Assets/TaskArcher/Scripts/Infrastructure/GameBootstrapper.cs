@@ -6,13 +6,13 @@ namespace TaskArcher.Infrastructure
 {
     public class GameBootstrapper : MonoBehaviour, ICoroutineRunner
     {
-        public Game game;
+        public Game Game;
         [SerializeField] private BaseUIRoot baseUIRoot;
         
         private void Awake()
         {
-            game = new Game(this, baseUIRoot);
-            game.StateMachine.Enter<BootstrapState>();
+            Game = new Game(this, baseUIRoot);
+            Game.StateMachine.Enter<BootstrapState>();
             
             DontDestroyOnLoad(this);
         }

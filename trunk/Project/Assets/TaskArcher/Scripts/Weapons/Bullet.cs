@@ -1,30 +1,46 @@
 ﻿using System;
+using NaughtyAttributes;
 using Spine.Unity;
 using TaskArcher.Coins;
+using TaskArcher.Infrastructure.Services.StaticData;
+using TaskArcher.Units;
 using UnityEngine;
 
-namespace TaskArcher.Scripts.Weapons
+namespace TaskArcher.Weapons
 {
     public class Bullet : MonoBehaviour
     {
+        [SerializeField] private BulletDefinition bulletDefinition;
+        
         [SerializeField] private SkeletonAnimation bulletSpine;
         [SerializeField] private AnimationReferenceAsset attack;
         [SerializeField] private Animator bulletParentAnimator;
 
-        [SerializeField] private float lifeTimeWhenHitUnit;
-        [SerializeField] private float lifeTimeWhenHitObstacle;
-        [SerializeField] private int damage;
-        
+        private float _lifeTimeWhenHitUnit;
+        private float _lifeTimeWhenHitObstacle;
+
         [SerializeField] private TrailRenderer trail;
-        
+
         [SerializeField] private LayerMask damageableLayerMask;
         [SerializeField] private LayerMask obstacleLayerMask;
         [SerializeField] private LayerMask dynamicObstacleLayerMask;
 
         [SerializeField] private Rigidbody2D bulletRigidbody;
-
-        public Action<float> onShotBullet;
         
+        [InfoBox("Set if needExplode true:")]
+        [SerializeField] private Explosion explosion;
+
+        public Action<float> OnShotBullet;
+
+        private Action<RaycastHit2D> _onHitEntity;
+        private Action<RaycastHit2D> _onHitObstacle;
+        private Action<RaycastHit2D> _onHitDynamicObstacle;
+
+        public float Damage {
+            get;
+            set;
+        }
+
         private Vector3 _previousFramePosition;
         private bool _isShoot;
         private bool _isHit;
@@ -32,13 +48,23 @@ namespace TaskArcher.Scripts.Weapons
         
         private void OnEnable()
         {
-            onShotBullet += Shoot;
+            OnShotBullet += Shoot;
+            _onHitEntity += HitEntity;
+            _onHitObstacle += HitObstacle;
+            _onHitDynamicObstacle += HitDynamicObstacle;
+            
             trail.gameObject.SetActive(false);
+
+            _lifeTimeWhenHitUnit = bulletDefinition.lifeTimeWhenHitUnit;
+            _lifeTimeWhenHitObstacle = bulletDefinition.lifeTimeWhenHitObstacle;
         }
 
         private void OnDestroy()
         {
-            onShotBullet -= Shoot;
+            OnShotBullet -= Shoot;
+            _onHitEntity -= HitEntity;
+            _onHitObstacle -= HitObstacle;
+            _onHitDynamicObstacle -= HitDynamicObstacle;
         }
 
         private void Update()
@@ -69,8 +95,8 @@ namespace TaskArcher.Scripts.Weapons
         private void Rotate()
         {
             if (!_isShoot) return;
-            var direction = bulletRigidbody.velocity;
-            var angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            Vector2 direction = bulletRigidbody.velocity;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(0, 0, angle);
         }
         
@@ -79,54 +105,59 @@ namespace TaskArcher.Scripts.Weapons
             bulletSpine.state.SetAnimation(0, attack, false);
         }
 
-        private void HitEntity(Collider2D entity, Vector3 position)
+        private void HitEntity(RaycastHit2D raycastHit)
         {
             _isHit = true;
-            Units.Enemy getUnit = entity.GetComponent<Units.Enemy>();
+            Enemy getUnit = raycastHit.collider.GetComponent<Enemy>();
 
             if (getUnit)
             {
-                getUnit.onTakeDamage?.Invoke(getUnit, damage);
+                getUnit.OnTakeDamage?.Invoke(getUnit, Damage);
             }
 
-            CoinSpawner.onCoinSpawn?.Invoke(position);
-            CoinSpawner.onCoinSpawn?.Invoke(position);
+            CoinSpawner.OnCoinSpawn?.Invoke(raycastHit.point);
+            CoinSpawner.OnCoinSpawn?.Invoke(raycastHit.point);
             
             PlayHitEffect();
             
-            transform.position = position;
+            transform.position = raycastHit.point;
+            
+            CheckIfNeedExplosion(raycastHit);
             
             StopSimulation();
-            Destroy(gameObject, lifeTimeWhenHitUnit);
+            Destroy(gameObject, _lifeTimeWhenHitUnit);
         }
         
-        private void HitObstacle(Vector3 position)
+        private void HitObstacle(RaycastHit2D raycastHit)
         {
             _isHit = true;
-            transform.position = position;
+            transform.position = raycastHit.point;
             
-            bulletParentAnimator.CrossFade("Hit", 0f);
+            bulletParentAnimator.CrossFade(ConstsAnimNames.Hit, 0f);
+           
+            CheckIfNeedExplosion(raycastHit);
             
             StopSimulation();
-            Destroy(gameObject, lifeTimeWhenHitObstacle);
+            Destroy(gameObject, _lifeTimeWhenHitObstacle);
         }
         
-        private void HitDynamicObstacle(Collider2D obstacle, Vector3 position)
+        private void HitDynamicObstacle(RaycastHit2D raycastHit)
         {
             _isHit = true;
             
-            Rigidbody2D obstacleRigidbody = obstacle.GetComponent<Rigidbody2D>();
-            obstacleRigidbody.AddForceAtPosition((Vector2)transform.right * _currentForce / 4, position, ForceMode2D.Impulse);
+            Rigidbody2D obstacleRigidbody = raycastHit.collider.GetComponent<Rigidbody2D>();
+            obstacleRigidbody.AddForceAtPosition((Vector2)transform.right * _currentForce / 4, 
+                raycastHit.point, ForceMode2D.Impulse);
             
-            /*CoinSpawner.onCoinSpawn?.Invoke(position);*/
+            transform.position = raycastHit.point;
+            transform.SetParent(raycastHit.transform);
             
-            transform.position = position;
-            transform.SetParent(obstacle.transform);
-            
-            bulletParentAnimator.CrossFade("Hit", 0f);
+            bulletParentAnimator.CrossFade(ConstsAnimNames.Hit, 0f);
+
+            CheckIfNeedExplosion(raycastHit);
             
             StopSimulation();
-            Destroy(gameObject, lifeTimeWhenHitObstacle);
+            Destroy(gameObject, _lifeTimeWhenHitObstacle);
         }
 
         private void StopSimulation()
@@ -137,28 +168,31 @@ namespace TaskArcher.Scripts.Weapons
 
         private void StateUpdate()
         {
-            var lineEntity = Physics2D.Linecast(_previousFramePosition, 
-                transform.position, damageableLayerMask);
-            if (lineEntity && !lineEntity.collider.isTrigger)
-            {
-                HitEntity(lineEntity.collider, lineEntity.point);
-            }
-            
-            var lineObstacle = Physics2D.Linecast(_previousFramePosition, 
-                transform.position, obstacleLayerMask);
-            if (lineObstacle && !lineObstacle.collider.isTrigger)
-            {
-                HitObstacle(lineObstacle.point);
-            }
-            
-            var lineDynamicObstacle = Physics2D.Linecast(_previousFramePosition, 
-                transform.position, dynamicObstacleLayerMask);
-            if (lineDynamicObstacle && !lineDynamicObstacle.collider.isTrigger)
-            {
-                HitDynamicObstacle(lineDynamicObstacle.collider,lineDynamicObstacle.point);
-            }
+            CheckCollisionHit(damageableLayerMask, _onHitEntity.Invoke);
+            CheckCollisionHit(obstacleLayerMask, _onHitObstacle.Invoke);
+            CheckCollisionHit(dynamicObstacleLayerMask, _onHitDynamicObstacle.Invoke);
 
             _previousFramePosition = transform.position;
+        }
+
+        private void CheckCollisionHit(LayerMask layerMask, Action<RaycastHit2D> onHit)
+        {
+            RaycastHit2D raycastHit = Physics2D.Linecast(_previousFramePosition, 
+                transform.position, layerMask);
+            if (raycastHit && !raycastHit.collider.isTrigger)
+            {
+                onHit?.Invoke(raycastHit);
+            }
+        }
+
+        private void CheckIfNeedExplosion(RaycastHit2D raycastHit2D)
+        {
+            if (!bulletDefinition.needExplode) return;
+            
+            if (explosion != null) 
+            {
+                explosion.Explode(raycastHit2D, bulletDefinition.explosionRadius, bulletDefinition.explosionPower);
+            }
         }
     }
 }

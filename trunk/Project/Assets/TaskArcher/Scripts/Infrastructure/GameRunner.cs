@@ -4,12 +4,12 @@ namespace TaskArcher.Infrastructure
 {
     public class GameRunner : MonoBehaviour
     {
-        public GameBootstrapper BootstrapperPrefab;
+        public GameBootstrapper bootstrapperPrefab;
         private void Awake()
         {
-            var bootstrapper = FindObjectOfType<GameBootstrapper>();
+            GameBootstrapper bootstrapper = FindObjectOfType<GameBootstrapper>();
             if (bootstrapper == null)
-                Instantiate(BootstrapperPrefab);
+                Instantiate(bootstrapperPrefab);
         }
     }
 }

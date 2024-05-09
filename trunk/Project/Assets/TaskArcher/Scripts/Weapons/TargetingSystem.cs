@@ -1,12 +1,10 @@
-﻿using DG.Tweening;
-using NaughtyAttributes;
-using TaskArcher.Scripts.Units;
-using Test.Scripts;
+﻿using NaughtyAttributes;
+using TaskArcher.Units;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.InputSystem;
 
-namespace TaskArcher.Scripts.Weapons
+namespace TaskArcher.Weapons
 {
     public class TargetingSystem : MonoBehaviour
     {
@@ -27,8 +25,6 @@ namespace TaskArcher.Scripts.Weapons
 
         private void Start()
         {
-            /*trajectory.PointsParent.gameObject.SetActive(false);*/
-            
             InitMainCamera();
 
             InitTargetCursor();
@@ -83,11 +79,9 @@ namespace TaskArcher.Scripts.Weapons
             {
                 targetTransform.gameObject.SetActive(true);
                 
-                /*trajectory.PointsParent.gameObject.SetActive(true);*/
-                
                 trajectory.ShowTrajectoryInTime();
                 
-                player.onChangeAnim?.Invoke(player.Animator, ConstsAnimNames.AttackStartClipName);
+                player.OnChangeAnim?.Invoke(player.Animator, ConstsAnimNames.AttackStartClipName);
 
                 isTargeting = true;
             }
@@ -96,7 +90,7 @@ namespace TaskArcher.Scripts.Weapons
 
             if (!_mainCamera) return;
                 
-            var targetPos = _mainCamera.ScreenToWorldPoint(pos);
+            Vector3 targetPos = _mainCamera.ScreenToWorldPoint(pos);
             targetPos.z = 0;
                 
             targetTransform.position = targetPos;
@@ -110,9 +104,7 @@ namespace TaskArcher.Scripts.Weapons
             targetTransform.gameObject.SetActive(false);
             trajectory.HideTrajectory();
             
-            /*trajectory.PointsParent.gameObject.SetActive(false);*/
-            
-            player.Weapon.onAttack?.Invoke();
+            player.Weapon.OnAttack?.Invoke();
             isTargeting = false;
         }
     }

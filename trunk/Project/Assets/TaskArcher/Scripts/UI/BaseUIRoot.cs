@@ -1,7 +1,6 @@
 using TaskArcher.Infrastructure;
 using TaskArcher.Infrastructure.Services;
 using TaskArcher.Infrastructure.Services.CustomEventBus;
-using TaskArcher.Scripts.UI;
 using UnityEngine;
 
 namespace TaskArcher.UI
@@ -11,14 +10,20 @@ namespace TaskArcher.UI
         public Canvas baseCanvas;
 
         public HudPanel topPanel;
+        public InGameScreen inGameScreen;
+        
         public FadeInFadeOut fadeInFadeOut;
 
-        public GameBootstrapper gameBootstrapper;
+        public GameBootstrapper GameBootstrapper {
+            get;
+            private set;
+        }
+        
         private IEventBus _eventBus;
 
         private void InitBaseUIRoot()
         {
-            gameBootstrapper = FindObjectOfType<GameBootstrapper>();
+            GameBootstrapper = FindObjectOfType<GameBootstrapper>();
             _eventBus = AllServices.Container.Single<IEventBus>();
         }
         

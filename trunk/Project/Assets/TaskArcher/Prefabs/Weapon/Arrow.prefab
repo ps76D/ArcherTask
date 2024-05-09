@@ -96,12 +96,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89064f09170e4e73b8761331880acac1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bulletDefinition: {fileID: 11400000, guid: 6f04a6939aaf9b24f9d3d2f51f37258f, type: 2}
   bulletSpine: {fileID: 6105716529151871942}
   attack: {fileID: 11400000, guid: 2feeb0da4f806074095fc1f24a7f88b8, type: 2}
   bulletParentAnimator: {fileID: 4695709086082646310}
-  lifeTimeWhenHitUnit: 1.5
-  lifeTimeWhenHitObstacle: 30
-  damage: 2
   trail: {fileID: 1343149840184354461}
   damageableLayerMask:
     serializedVersion: 2

@@ -1,30 +1,55 @@
-﻿using NaughtyAttributes;
+﻿using System;
+using NaughtyAttributes;
+using TaskArcher.Infrastructure.Services.StaticData;
 using UnityEngine;
 
-namespace TaskArcher.Scripts.Weapons
+namespace TaskArcher.Weapons
 {
     public class RangeWeapon : Weapon
     {
-        [SerializeField] private Bullet bulletPrefab;
         [SerializeField] private Transform bulletStartTransform;
         [SerializeField] private TargetingSystem targetingSystem;
-        [SerializeField] private float forceFactor;
-        [SerializeField] private float maxForce;
-        [SerializeField] private float minForce;
+
+        [SerializeField] private RangeWeaponDefinition weaponDefinition;
+        [SerializeField] private BulletDefinition currentBulletDefinition;
 
         [InfoBox("Для наблюдения при дебаге, задавать не надо")]
         [SerializeField] private float force;
+        
         public Transform BulletStartTransform => bulletStartTransform;
+        public BulletDefinition CurrentBulletDefinition {
+            get => currentBulletDefinition;
+            set => currentBulletDefinition = value;
+        }
         public float Force => force;
+        
+        private float _forceFactor;
+        private float _maxForce;
+        private float _minForce;
 
+        private StaticData _staticData;
+        
         private void OnEnable()
         {
-            onAttack += Shot;
+            OnAttack += Shot;
+            
+            InitWeapon();
+        }
+
+        private void InitWeapon()
+        {
+            _staticData = StaticData.Instance;
+            
+            _forceFactor = weaponDefinition.forceFactor;
+            _maxForce = weaponDefinition.maxForce;
+            _minForce = weaponDefinition.minForce;
+            
+            CurrentBulletDefinition = _staticData.GameStaticData.allAmmoDefinitions[0];
         }
 
         private void OnDisable()
         {
-            onAttack -= Shot;
+            OnAttack -= Shot;
         }
 
         private void Shot()
@@ -34,25 +59,25 @@ namespace TaskArcher.Scripts.Weapons
 
         private void SpawnBullet(Vector3 startPosition, Quaternion startRotation)
         {
-            Bullet bullet = Instantiate(bulletPrefab, startPosition, startRotation);
-
+            Bullet bullet = Instantiate(currentBulletDefinition.bulletPrefab, startPosition, startRotation);
+            bullet.Damage = weaponDefinition.damage * currentBulletDefinition.bulletDamageMultiplier;
             CalculateForce();
                 
-            bullet.onShotBullet?.Invoke(force);
+            bullet.OnShotBullet?.Invoke(force);
         }
 
         public void CalculateForce()
         {
-            var calcForce = forceFactor * targetingSystem.Distance.magnitude;
+            var calcForce = _forceFactor * targetingSystem.Distance.magnitude;
 
-            if (calcForce > maxForce)
+            if (calcForce > _maxForce)
             {
-                calcForce = maxForce;
+                calcForce = _maxForce;
             }
             
-            if (calcForce < minForce)
+            if (calcForce < _minForce)
             {
-                calcForce = minForce;
+                calcForce = _minForce;
             }
 
             force = calcForce;

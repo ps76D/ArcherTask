@@ -7,16 +7,16 @@ namespace TaskArcher.Coins
     {
         [SerializeField] private Coin coinPrefab;
 
-        public static Action<Vector3> onCoinSpawn;
+        public static Action<Vector3> OnCoinSpawn;
 
         private void OnEnable()
         {
-            onCoinSpawn += SpawnCoin;
+            OnCoinSpawn += SpawnCoin;
         }
 
         private void OnDisable()
         {
-            onCoinSpawn -= SpawnCoin;
+            OnCoinSpawn -= SpawnCoin;
         }
 
         private void SpawnCoin(Vector3 spawnPosition)

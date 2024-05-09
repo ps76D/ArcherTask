@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace TaskArcher.Scripts.Weapons
+namespace TaskArcher.Weapons
 {
     public class Trajectory : MonoBehaviour
     {
@@ -15,7 +15,10 @@ namespace TaskArcher.Scripts.Weapons
         [SerializeField] private float pointMinScale;
 
         [SerializeField] private Animator nestedFadeGroupAnimator;
-
+        
+        [SerializeField] private float gravityFactor = 0.5f;
+        [SerializeField] private float startOffsetFactor = 4f;
+        
         public Transform PointsParent => pointsParent;
         
         private float _distanceBetweenPoints;
@@ -35,13 +38,13 @@ namespace TaskArcher.Scripts.Weapons
         {
             _trajectoryPoints = new SpriteRenderer[numberOfPoints];
 
-            var scaleStep = (pointMaxScale - pointMinScale) / numberOfPoints;
-            var nextScale = pointMaxScale;
+            float scaleStep = (pointMaxScale - pointMinScale) / numberOfPoints;
+            float nextScale = pointMaxScale;
             
             for (int i = 0; i < numberOfPoints; i++)
             {
                 nextScale -= scaleStep;
-                var scale = Vector3.one * nextScale;
+                Vector3 scale = Vector3.one * nextScale;
                 
                 _trajectoryPoints[i] = Instantiate(pointPrefab, pointsParent);
                 
@@ -56,14 +59,14 @@ namespace TaskArcher.Scripts.Weapons
             for (int i = 0; i < _trajectoryPoints.Length; i++)
             {
                 _trajectoryPoints[i].transform.position = 
-                    CalculatePointPosition(_distanceBetweenPoints / 4 + i * _distanceBetweenPoints);
+                    CalculatePointPosition(_distanceBetweenPoints / startOffsetFactor + i * _distanceBetweenPoints);
             }
         }
 
         private Vector2 CalculatePointPosition(float distance)
         {
             Vector2 position = (Vector2)weapon.BulletStartTransform.position + (Vector2)weapon.BulletStartTransform.right.normalized
-                * (weapon.Force * distance) + Physics2D.gravity * (distance * distance * 0.5f);
+                * (weapon.Force * distance) + Physics2D.gravity * (distance * distance * gravityFactor);
             
             return position;
         }
@@ -72,7 +75,7 @@ namespace TaskArcher.Scripts.Weapons
         {
             weapon.CalculateForce();
             
-            var calcDistance = minDistanceBetweenPoints * Mathf.Sqrt(weapon.Force);
+            float calcDistance = minDistanceBetweenPoints * Mathf.Sqrt(weapon.Force);
 
             if (calcDistance > maxDistanceBetweenPoints)
             {
@@ -89,9 +92,8 @@ namespace TaskArcher.Scripts.Weapons
 
         public void ShowTrajectoryInTime()
         {
-            /*Debug.Log("ShowTrajectoryInTime");*/
             PointsParent.gameObject.SetActive(true);
-            nestedFadeGroupAnimator.CrossFade("Show", 0);
+            nestedFadeGroupAnimator.CrossFade(ConstsAnimNames.Show, 0);
         }
 
         private void HideParent()
@@ -101,8 +103,7 @@ namespace TaskArcher.Scripts.Weapons
         
         public void HideTrajectory()
         {
-            /*Debug.Log("HideTrajectory");*/
-            nestedFadeGroupAnimator.CrossFade("Hide", 0);
+            nestedFadeGroupAnimator.CrossFade(ConstsAnimNames.Hide, 0);
             Invoke(nameof(HideParent), 0.07f );
         } 
     }

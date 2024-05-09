@@ -20,7 +20,6 @@ namespace TaskArcher.Infrastructure.States
                 [typeof(LoadLevelState)] = new LoadLevelState(this, sceneLoader, 
                     services.Single<IGameFactory>(), baseUIRoot, services.Single<IEventBus>()),
                 [typeof(InGameState)] = new InGameState(this, sceneLoader, services.Single<IEventBus>()),
-                [typeof(RestartGameState)] = new RestartGameState(this, services.Single<IEventBus>()),
             };
         }
         public void Enter<TState>() where TState : class, IState

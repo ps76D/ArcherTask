@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace TaskArcher.Scripts.UI
+namespace TaskArcher.UI
 {
     public class HudCoinPosition : MonoBehaviour
     {
