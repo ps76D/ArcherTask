@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 466d5c7eddd34f71bb4a01ac5bd64e1e, type: 3}
+  m_Name: ArrowExplosiveDefinition
+  m_EditorClassIdentifier: 
+  bulletPrefab: {fileID: 6506103484363399670, guid: 114ea88582f354241a418bcbc895d00c, type: 3}
+  bulletDamageMultiplier: 1
+  lifeTimeWhenHitUnit: 1.5
+  lifeTimeWhenHitObstacle: 1.5
+  needExplode: 1
+  explosionRadius: 20
+  explosionPower: 1000
